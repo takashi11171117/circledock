@@ -2,4 +2,4 @@ circledock:
   build: ./
   entrypoint: tail -f /dev/null
   container_name: circledock
-  image: circledock
+  image: circledock:latest

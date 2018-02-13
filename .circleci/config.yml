@@ -4,6 +4,9 @@ jobs:
     working_directory: ~/circledock
     docker:
       - image: circleci/ruby
+    environment:
+      - OWNER: asupara7
+      - IMAGE1_NAME: circledock
 
     steps:
       - checkout
@@ -13,21 +16,27 @@ jobs:
           command: sudo apt-get install -y ansible
       - restore_cache:
           keys:
-            - docker-{{ .Branch }}--{{ checksum ".circleci/config.yml" }}--{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
+            - v1-{{ .Branch }}
           paths:
-            - ~/caches/images.tar
+            - /caches/${IMAGE1_NAME}:latest.tar
       - run:
-          name: Setup docker
+          name: Load Docker image layer cache
           command: |
-            if [ ! -f ~/caches/images.tar ]; then
-              docker-compose build
-              mkdir -p ~/caches
-              docker save $(docker images | awk 'NR>=2 && ! /^<none>/{print $1}') -o ~/caches/images.tar
-            fi
+            set +o pipefail
+            docker load -i /caches/${IMAGE1_NAME}:latest.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=${IMAGE1_NAME}:latest -t ${IMAGE1_NAME}:latest .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/${IMAGE1_NAME}:latest.tar ${IMAGE1_NAME}:latest
       - save_cache:
-          key: docker-{{ .Branch }}--{{ checksum ".circleci/config.yml" }}--{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
+          key: v1-{{ .Branch }}-{{ epoch }}
           paths:
-            - ~/caches/images.tar
+            - /caches/${IMAGE1_NAME}:latest.tar
       - run:
           name: docker-compose up
           command: docker-compose up -d
@@ -49,3 +58,11 @@ jobs:
           name: Run tests
           command: |
             bundle exec rake
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker tag app "${OWNER}/${IMAGE1_NAME}:${CIRCLE_SHA1}"
+              docker push "${OWNER}/${IMAGE1_NAME}:${CIRCLE_SHA1}"
+            fi
