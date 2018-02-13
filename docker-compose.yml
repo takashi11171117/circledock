@@ -1,5 +1,5 @@
-googlecloud:
+circledock:
   build: ./
   entrypoint: tail -f /dev/null
-  container_name: googlecloud
-  image: googlecloud
+  container_name: circledock
+  image: circledock
