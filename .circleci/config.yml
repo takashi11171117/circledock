@@ -18,12 +18,12 @@ jobs:
           keys:
             - v1-{{ .Branch }}
           paths:
-            - /caches/${IMAGE1_NAME}:latest.tar
+            - ~/caches/${IMAGE1_NAME}:latest.tar
       - run:
           name: Load Docker image layer cache
           command: |
             set +o pipefail
-            docker load -i /caches/${IMAGE1_NAME}:latest.tar | true
+            docker load -i ~/caches/${IMAGE1_NAME}:latest.tar | true
       - run:
           name: Build application Docker image
           command: |
@@ -31,12 +31,12 @@ jobs:
       - run:
           name: Save Docker image layer cache
           command: |
-            mkdir -p /caches
-            docker save -o /caches/${IMAGE1_NAME}:latest.tar ${IMAGE1_NAME}:latest
+            mkdir -p ~/caches
+            docker save -o ~/caches/${IMAGE1_NAME}:latest.tar ${IMAGE1_NAME}:latest
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
-            - /caches/${IMAGE1_NAME}:latest.tar
+            - ~/caches/${IMAGE1_NAME}:latest.tar
       - run:
           name: docker-compose up
           command: docker-compose up -d
