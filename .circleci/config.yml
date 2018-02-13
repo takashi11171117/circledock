@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: /circledock
+    working_directory: ~/circledock
     docker:
       - image: circleci/ruby
 
