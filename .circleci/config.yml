@@ -11,6 +11,23 @@ jobs:
       - run:
           name: Install dependencies
           command: sudo apt-get install -y ansible
+      - restore_cache:
+          keys:
+            - docker-{{ .Branch }}--{{ checksum ".circleci/config.yml" }}--{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
+          paths:
+            - ~/caches/images.tar
+      - run:
+          name: Setup docker
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+              docker-compose build
+              mkdir -p ~/caches
+              docker save $(docker images | awk 'NR>=2 && ! /^<none>/{print $1}') -o ~/caches/images.tar
+            fi
+      - save_cache:
+          key: docker-{{ .Branch }}--{{ checksum ".circleci/config.yml" }}--{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
+          paths:
+            - ~/caches/images.tar
       - run:
           name: docker-compose up
           command: docker-compose up -d

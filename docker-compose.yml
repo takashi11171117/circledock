@@ -2,3 +2,4 @@ googlecloud:
   build: ./
   entrypoint: tail -f /dev/null
   container_name: googlecloud
+  image: googlecloud
