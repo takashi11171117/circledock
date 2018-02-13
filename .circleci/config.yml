@@ -17,7 +17,7 @@ jobs:
       - run:
           name: provision with ansible
           command: |
-            cd ansible \
+            cd ansible
             ansible-playbook site.yml
       - restore_cache:
           key: job-medley-app-{{ checksum "Gemfile.lock" }}
