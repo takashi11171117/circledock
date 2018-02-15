@@ -18,11 +18,7 @@ jobs:
             docker build -t ${OWNER}/${IMAGE1_NAME}:latest .
       - run:
           name: Save image
-          command: docker image save ${OWNER}/${IMAGE_NAME}:latest > ./docker-image.tar
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./docker-image.tar
+          command: docker image save ${OWNER}/${IMAGE1_NAME}:latest > ./docker-image.tar
       - run:
           name: Load image from tar
           command: docker load -i ./docker-image.tar
