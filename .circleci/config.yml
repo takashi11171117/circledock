@@ -10,7 +10,8 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Build application Docker image
           command: |
@@ -36,6 +37,6 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-              docker tag ${IMAGE1_NAME}:latest "${OWNER}/${IMAGE1_NAME}:${CIRCLE_SHA1}"
-              docker push "${OWNER}/${IMAGE1_NAME}"
+              docker tag ${OWNER}/${IMAGE1_NAME}:latest ${OWNER}/${IMAGE1_NAME}:${CIRCLE_SHA1}
+              docker push ${OWNER}/${IMAGE1_NAME}
             fi
