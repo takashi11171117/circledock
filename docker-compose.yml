@@ -1,4 +1,4 @@
 circledock:
-  image: circledock:latest
+  image: asupara7/circledock:latest
   entrypoint: tail -f /dev/null
   container_name: circledock
