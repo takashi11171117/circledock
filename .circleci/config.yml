@@ -37,5 +37,5 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
               docker tag ${IMAGE1_NAME}:latest "${OWNER}/${IMAGE1_NAME}:${CIRCLE_SHA1}"
-              docker push "${OWNER}/${IMAGE1_NAME}:${CIRCLE_SHA1}"
+              docker push "${OWNER}/${IMAGE1_NAME}"
             fi
